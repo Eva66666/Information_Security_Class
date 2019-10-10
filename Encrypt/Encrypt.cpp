@@ -248,7 +248,8 @@ void rail_fence(string key,string plaint){
         if(w+1==r_l){
             n = 1;
         }
-        s[k] = s[k] + plaint[i];
+        char x = plaint[i]-'a'+'A';
+        s[k] = s[k] + x;
         
         if(n == 0){
             k++;
