@@ -158,26 +158,33 @@ int main(){
     }
 //vernam    
 void vernam(string key,string plaint){
-    int k = 0, p = 0;
+    int p = key.length();
     int q = plaint.length();
     char the_key[30];
-    char cipher[40];
-    char a[26][26];
-    for(int i= 0;i < 26; i++){
-        for(int j = 0; j < 26; j++){
-            a[i][j] = ((j+k)%26) + 'A';
-            //printf("111");
+    int row,col;
+    if(p<q){
+        for(int i = 0; i < q; i++){
+            if(i<key.length()){
+                the_key[i]=key[i];
+                row = the_key[i] - 'A';
+            }
+            else{
+                the_key[i] = plaint[i-p];
+                row = the_key[i] - 'a';
+            }
+            col = plaint[i] - 'a';
+            int ccc = row^col;
+            char kkk = 'A'+ ccc;
+            cout << kkk;
         }
-        k++;
-    }
-    for(int i = 0; i < q; i++){
-        p = i%(key.length());
-        the_key[i]=key[p];
-    }
-    for(int i = 0; i < q; i++){
-        int row = the_key[i] - 'A';
-        int col = plaint[i] - 'a';
-        cout << a[row][col];
+    }else{
+        for(int i = 0; i < q; i++){
+                int row = key[i] - 'A';
+                int col = plaint[i] - 'a';
+                int ccc = row^col;
+                char kkk = 'A'+ ccc;
+                cout << kkk;
+        }
     }
 }
 
