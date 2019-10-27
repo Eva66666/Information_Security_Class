@@ -1,67 +1,77 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <iostream>       
-#include <string>  
-
+#include <iostream>
+#include <bitset>
+#include <string>
 
 using namespace std;
-
-int IP[64]={
-    58, 50, 42, 34, 26, 18, 10, 2,
-    60, 52, 44, 36, 28, 20, 12, 4,
-    62, 54, 46, 38, 30, 22, 14, 6,
-    64, 56, 48, 40, 32, 24, 16, 8,
-    57, 49, 41, 33, 25, 17, 9,  1,
-    59, 51, 43, 35, 27, 19, 11, 3,
-    61, 53, 45, 37, 29, 21, 13, 5,
-    63, 55, 47, 39, 31, 23, 15, 7
+ 
+bitset<64> key;                // key
+bitset<48> subKey[16];         // subkey
+ 
+int IP[] = {
+	58, 50, 42, 34, 26, 18, 10, 2,
+	60, 52, 44, 36, 28, 20, 12, 4,
+	62, 54, 46, 38, 30, 22, 14, 6,
+	64, 56, 48, 40, 32, 24, 16, 8,
+	57, 49, 41, 33, 25, 17,  9, 1,
+	59, 51, 43, 35, 27, 19, 11, 3,
+	61, 53, 45, 37, 29, 21, 13, 5,
+	63, 55, 47, 39, 31, 23, 15, 7
 };
-int IP_1[64]={
-    40, 8, 48, 16, 56, 24, 64, 32,
-    39, 7, 47, 15, 55, 23, 63, 31,
-    38, 6, 46, 14, 54, 22, 62, 30,
+
+int IP_1[] = {
+	40, 8, 48, 16, 56, 24, 64, 32,
+	39, 7, 47, 15, 55, 23, 63, 31,
+	38, 6, 46, 14, 54, 22, 62, 30,
 	37, 5, 45, 13, 53, 21, 61, 29,
 	36, 4, 44, 12, 52, 20, 60, 28,
 	35, 3, 43, 11, 51, 19, 59, 27,
 	34, 2, 42, 10, 50, 18, 58, 26,
 	33, 1, 41,  9, 49, 17, 57, 25
 };
-int E[48]={
-    32,  1,  2,  3,  4,  5,
-	4,  5,  6,  7,  8,  9,
-	8,  9, 10, 11, 12, 13,
+
+int E[] = {
+	32,  1,  2,  3,  4,  5,
+	 4,  5,  6,  7,  8,  9,
+	 8,  9, 10, 11, 12, 13,
 	12, 13, 14, 15, 16, 17,
 	16, 17, 18, 19, 20, 21,
 	20, 21, 22, 23, 24, 25,
 	24, 25, 26, 27, 28, 29,
-	28, 29, 30, 31, 32,  1
+	28, 29, 30, 31, 32, 1
 };
-int PC_1[56] = {
-    57, 49, 41, 33, 25, 17, 9,
-	 1, 58, 50, 42, 34, 26, 18,
-	10,  2, 59, 51, 43, 35, 27,
-	19, 11,  3, 60, 52, 44, 36,
+ 
+int PC_1[] = {
+	57, 49, 41, 33, 25, 17, 9,
+	1, 58, 50, 42, 34, 26, 18,
+	10, 2, 59, 51, 43, 35, 27,
+	19, 11, 3, 60, 52, 44, 36,
 	63, 55, 47, 39, 31, 23, 15,
-	 7, 62, 54, 46, 38, 30, 22,
-	14,  6, 61, 53, 45, 37, 29,
-	21, 13,  5, 28, 20, 12,  4
-};
-int PC_2[48] = {
-    14, 17, 11, 24,  1,  5,
+	7, 62, 54, 46, 38, 30, 22,
+	14, 6, 61, 53, 45, 37, 29,
+	21, 13, 5, 28, 20, 12, 4
+}; 
+
+int PC_2[] = {
+	14, 17, 11, 24,  1,  5,
 	 3, 28, 15,  6, 21, 10,
 	23, 19, 12,  4, 26,  8,
 	16,  7, 27, 20, 13,  2,
 	41, 52, 31, 37, 47, 55,
-    30, 40, 51, 45, 33, 48,
+	30, 40, 51, 45, 33, 48,
 	44, 49, 39, 56, 34, 53,
 	46, 42, 50, 36, 29, 32
 };
-int P[32] ={
-    16,  7, 20, 21,29, 12, 28, 17,
-	 1, 15, 23, 26, 5, 18, 31, 10,
-	 2,  8, 24, 14,32, 27,  3,  9,
-	19, 13, 30,  6,22, 11,  4, 25
+ 
+int shift[] = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
+ 
+int P[] = {
+	16,  7, 20, 21, 29, 12, 28, 17,
+	 1, 15, 23, 26,  5, 18, 31, 10,
+	 2,  8, 24, 14, 32, 27,  3,  9,
+	19, 13, 30,  6, 22, 11,  4, 25
 };
+
 int S_BOX[8][4][16] = {
 	{  
 		{14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7},  
@@ -112,183 +122,273 @@ int S_BOX[8][4][16] = {
 		{2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11}  
 	} 
 };
-int test32[]{
-	 1, 1, 1, 1, 0, 0, 1, 0, 
-	 1, 1, 0, 0, 1, 0, 1, 1, 
-	 0, 1, 1, 1, 1, 1, 0, 0, 
-	 0, 0, 0, 1, 1, 0, 1, 0
-};
-int test48[]{
-	1, 1, 1, 1, 0, 0, 1, 0, 
-	1, 1, 0, 0, 1, 0, 1, 1, 
-	0, 1, 1, 1, 1, 1, 0, 0, 
-	0, 0, 0, 1, 1, 0, 1, 0,
-	1, 1, 1, 1, 0, 0, 1, 0,
-	1, 1, 1, 1, 0, 0, 1, 0
-};
-int shift[]={1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
-int* toBits(string);
-int* f_function(int*,int*);
-int* key_schedule(int *);
-int* left_shift(int *,int);
 
-int main(){
+//change into bits
+bitset<64> toBits(const char s[18])
+{
+	bitset<64> bits;
+		for(int i =2, n = -1; i<18;i++){
+			
+        if(s[i]>='0' && s[i]<='9'){
+            int a = s[i]-'0';
+            int k = 0;
+            while(a != 0){
+                bits[n+4-k]=a%2;
+                a /= 2;
+                k++;
+            }
+            n+=4;
+            if(k<4){
+                for(int i = 1;i<(4-k);i++){
+                        bits[n+i-4]=0;
+                }
+            }
+        }
+        if(s[i]>='A' && s[i]<='F'){
+            int a = s[i]-'A'+10;
+            int p = 0;
+            while(a != 0){
+                bits[n+4-p]=a%2;
+                a /= 2;
+                p++;
+                
+            }
+            n+=4;
+        }
+    }
+    // bitset<64> bits2;
+    // for(int i = 0;i<64;i++){
+    // 	bits2[i]=bits[63-i];
+    // }
+	return bits;
+}
 
-    string cipher;
-    string key;
-    cin >> key >>cipher;
-    //轉成二進制形式
-    int* b_key = toBits(key);
-    int* b_cipher = toBits(cipher);
-    //test1
-    /*std::cout << "test tobit" << std::endl;
-    for(int i =1;i<=64;i++){
-    	cout<<b_cipher[i-1];
-    	if(i%8==0){
-    		std::cout << "" << std::endl;
-    	}
-    }
-    std::cout << "test tobit" << std::endl;*/
-    
-    
-    int b_cipher1[64];
-    int init_L[32],left[32];
-    int init_R[32];
-    //置換IP, get left,right
-    for(int i = 0;i<64;i++){
-    	b_cipher1[i]=b_cipher[IP[i]-1];
-    	if(i<32){
-			init_L[i]=b_cipher1[i];
-		}else{
-			init_R[i-32]=b_cipher1[i];
+//leftshift
+
+bitset<28> leftShift(bitset<28> k, int s)
+{
+	bitset<28> tmp;
+	for(int i=0; i<28; i++){
+		tmp[i]=k[(i+s)%28];
+	}
+	return tmp;
+}
+ 
+//generate subkey
+void key_schedule() 
+{
+	bitset<56> key2;
+	bitset<28> C;	
+	bitset<28> D;
+	bitset<48> key3;
+	// PC-1
+	for (int i=0; i<56; i++)
+		key2[i] = key[PC_1[i]-1];
+	
+	for(int key_round=0; key_round<16; key_round++) 
+	{
+		//left&right
+		for(int i=0; i<28; i++)
+			C[i] = key2[i];
+		for(int i=28; i<56; i++)
+			D[i-28] = key2[i];
+		
+		// //test
+		// std::cout <<"\n"<< "test shift" << std::endl;
+		// std::cout << "L"<<key_round<<":" ;
+	 //   for(int i =0;i<28;i++){
+	 //   	cout<<C[i];	
+	 //   	/*if(i%8==0){
+	 //   		std::cout << "" << std::endl;
+	 //   	}*/
+	 //   }
+	 //   std::cout << "" << std::endl;
+	 //   std::cout << "R"<<key_round<<":";
+	 //   for(int i =0;i<28;i++){
+	 //   	cout<<D[i];	
+	 //   	/*if(i%8==0){
+	 //   		std::cout << "" << std::endl;
+	 //   	}*/
+	 //   }
+	 //   std::cout << "\ntest shift" << std::endl;	
+		
+		// left shift
+		C = leftShift(C, shift[key_round]);
+		D = leftShift(D, shift[key_round]);
+		
+		//PC-2
+		for(int i=28; i<56; i++)
+			key2[i] = D[i-28];
+		for(int i=0; i<28; i++)
+			key2[i] = C[i];
+		for(int i=0; i<48; i++)
+			key3[i] = key2[PC_2[i]-1];
+		subKey[key_round] = key3;
+	}
+	//test
+	// std::cout <<"\n"<< "test key" << std::endl;
+ //   for(int i =0;i<16;i++){
+ //   	cout<<"subkey"<<i<<":";
+ //   	for(int j=0;j<48;j++){
+    		
+ //   		cout<<subKey[i][j];
+ //   	}
+ //   	std::cout << "" << std::endl;
+ //   	/*if(i%8==0){
+ //   		std::cout << "" << std::endl;
+ //   	}*/
+ //   }
+ //   std::cout << "test key" << std::endl;
+}
+
+bitset<32> f_function(bitset<32> R, bitset<48> k)
+{
+	bitset<48> R1;
+	for(int i=0; i<48; i++)
+		R1[i] = R[E[i]-1];
+	//for(int i=0; i<48; i++)
+		//R1[i] = R1[i] ^ k[i];
+	R1 = R1 ^ k;
+	
+	bitset<32> R3;
+	int x = 0,t=0;
+	for(int i=0; i<48; i=i+6)
+	{
+		int row = R1[i]*2 + R1[i+5];
+		int col = R1[i+1]*8 + R1[i+2]*4 + R1[i+3]*2 + R1[i+4];
+		int r = S_BOX[t][row][col];
+		
+		//test
+		/*std::cout <<"\n"<< "test R2" << std::endl;
+		for(int a =0;a<6;a++){
+			cout<<R1[a+i];
 		}
-    }
-    
-    //test2
-    /*std::cout <<"\n"<< "test ip" << std::endl;
-    for(int i =1;i<=64;i++){
-    	cout<<b_cipher1[i-1];
-    	if(i%8==0){
-    		std::cout << "" << std::endl;
-    	}
-    }
-    std::cout << "test ip" << std::endl;*/
-    
-    //test3
-    /*std::cout <<"\n"<< "test l\r" << std::endl;
-    for(int i = 1;i<32;i++){
-    	cout<<init_L[i-1];
-    	if(i%8==0)
-    	std::cout << "" << std::endl;
-    }
-    std::cout << "" << std::endl;
-    for(int i = 0;i<32;i++){
-    	cout<<init_R[i];
-    	if(i%8==0)
-    	std::cout << "" << std::endl;
-    }
-    std::cout << "test l\r" << std::endl;*/
-    
-    //get subkey
-    int* subkey = key_schedule(b_key);
-    //test4
-    /*std::cout <<"\n"<< "ori key" << std::endl;
-    for(int i =1;i<=64;i++){
-    	cout<<b_key[i-1];
-    	if(i%8==0){
-    		std::cout << "" << std::endl;
-    	}
-    }
-    std::cout << "ori key" << std::endl;
-    std::cout <<"\n"<< "test key" << std::endl;
-    for(int i =1;i<=768;i++){
-    	cout<<subkey[i-1];
-    	if(i%8==0){
-    		std::cout << "" << std::endl;
-    	}
-    	if(i%48==0){
-    		std::cout << "" << std::endl;
-    	}
-    }
-    std::cout << "test key" << std::endl;*/
-    
-    
-    int sub_key[48];
-    
-	//16 rounds
-    for(int turn=0;turn<16;turn++){
-    	for(int i=0;i<48;i++){
-    		sub_key[i]=subkey[768-((turn+1)*48)+i];
-    	}
-    	//test5
-	    /*std::cout <<"\n"<< "sub key" << std::endl;
-	    for(int i =1;i<=64;i++){
-	    	cout<<sub_key[i-1];
-	    	if(i%8==0){
-	    		std::cout << "" << std::endl;
-	    	}
-	    }
-	    std::cout << "sub key" << std::endl;*/
-	    
-    	for(int i = 0;i<32;i++){
-			left[i] = init_R[i];
-		}
-		int* right=f_function(init_R,sub_key);
-		for(int i = 0;i<32;i++){
-			//cout<<right[i];
-			//if(i%8==0)
-			//std::cout << "" << std::endl;
-			init_R[i]=init_L[i]^right[i];
+		std::cout << "S_BOX[t][row][col]:" <<r <<" t:"<<t<< " row:"<<row<<" col:"<<col<<endl;
+	    std::cout << "test R2" << std::endl;*/
+		
+		bitset<4> R2;
+		for(int a = 0;a<4 ;a++){
+			if(r !=0){
+				R2[a]=r%2;
+				r /= 2;	
+			}else{
+				R2[a]=0;	
+			}
 		}
 		
-		//std::cout << "" << std::endl;
-		for(int i = 0;i<32;i++){
-			init_L[i]=left[i];
+		for(int a = 0; a<4;a++){
+			R3[x+a]=R2[3-a];
 		}
-    }
-    
-    
-    //combine right&left
-    int plain[64];
-    for(int i =0;i<64;i++){
-    	if(i<32){
-    		plain[i]=init_L[i];
-    	}else{
-    		plain[i]=init_R[i-32];
+		x += 4;
+		t++;
+	}
+	//test
+	/*std::cout <<"\n"<< "test output0" << std::endl;
+    for(int i =1;i<=32;i++){
+    	cout<<R3[i-1];
+    	if(i%8==0){
+    		std::cout << "" << std::endl;
     	}
     }
-    /*std::cout << "\n" << std::endl;
-    for(int i =1 ;i<=64;i++){
-    	cout<<plain[i];
+    std::cout << "test output0" << std::endl;*/
+    
+	// P
+	bitset<32> R4;
+	for(int i=0; i<32; i++)
+		R4[i] = R3[P[i]-1];
+		
+	//test
+	/*std::cout <<"\n"<< "test R3" << std::endl;
+    for(int i =1;i<=32;i++){
+    	cout<<R3[i-1];
+    	if(i%8==0){
+    		std::cout << "" << std::endl;
+    	}
+    }
+    std::cout << "test R3" << std::endl;*/
+	
+	return R4;
+}
+
+bitset<64> decrypt(bitset<64>& cipher)
+{
+	bitset<64> plain;
+	bitset<64> currentBits;
+	bitset<32> left;
+	bitset<32> right;
+	bitset<32> newLeft;
+	// IP
+	for(int i=0; i<64; i++)
+		currentBits[i] = cipher[IP[i]-1];
+	// left&R
+	for(int i=0; i<32;i++)
+		left[i] = currentBits[i];
+	for(int i=0; i<32; i++)
+		right[i] = currentBits[32+i];
+	// 16 rounds
+	for(int round=0; round<16; round++)
+	{
+		newLeft = right;
+		right = left ^ f_function(right,subKey[15-round]);
+		left = newLeft;
+	}
+	// combine l&r
+	for(int i=0; i<32; i++)
+		plain[i] = right[i];
+	for(int i=32; i<64; i++)
+		plain[i] = left[i-32];
+	// IP-1
+	currentBits = plain;
+	for(int i=0; i<64; i++)
+		plain[i] = currentBits[IP_1[i]-1];
+
+	return plain;
+}
+
+int main() {
+	string c_i;
+    string k_i;
+    cin >> k_i >>c_i;
+    
+	bitset<64> cipher = toBits(c_i.c_str());
+	key = toBits(k_i.c_str());
+	//test
+	//std::cout <<"\n"<< "test tobit" << std::endl;
+    /*for(int i =1;i<=64;i++){
+    	cout<<cipher[i-1];
     	if(i%8==0){
     		std::cout << "" << std::endl;
     	}
     }*/
-    
-    //IP-1
-    int bitplain[64];
-    //std::cout << "\n" << std::endl;
-    for(int i = 0;i<64;i++){
-    	bitplain[i]=plain[IP_1[i]-1];
-    }
-    
-    //test
-    /*std::cout <<"\n"<< "test ip-1" << std::endl;
+    // std::cout << "" << std::endl;
+    /*for(int i =1;i<=64;i++){
+    	cout<<key[i-1];
+    	if(i%8==0){
+    		std::cout << "" << std::endl;
+    	}
+    }*/
+    //std::cout << cipher << std::endl;
+    // std::cout << "" << std::endl;
+    // std::cout << "test tobit" << std::endl;
+
+	key_schedule();
+	bitset<64> temp_plain = decrypt(cipher);
+	//test
+	/*std::cout <<"\n"<< "test decrypt" << std::endl;
     for(int i =1;i<=64;i++){
-    	cout<<bitplain[i-1];
+    	cout<<temp_plain[i-1];
     	if(i%8==0){
     		std::cout << "" << std::endl;
     	}
     }
-    std::cout << "test ip-1" << std::endl;*/
-    
-    //tohex
-    std::cout << "\n\n" << std::endl;
+    std::cout << temp_plain << std::endl;
+    std::cout << "test decrypt" << std::endl;*/
     char out_plain[16];
+    cout<<"0x";
     for(int i =0;i<64;i=i+4){
             //k->the number of round
             int k = i/4;
-            int dec=8*bitplain[i]+4*bitplain[i+1]+2*bitplain[i+2]+bitplain[i+3];
+            int dec=8*temp_plain[i]+4*temp_plain[i+1]+2*temp_plain[i+2]+temp_plain[i+3];
             if(dec>9){
                 int w=dec-10;
                 out_plain[k]='a'+w;
@@ -298,167 +398,6 @@ int main(){
                 cout<<out_plain[k];
             }
     }
-    //int* test = f_function(test32,test48);
-    /*for(int i =0;i<6;i++){
-    	std::cout << test[i] << std::endl;
-    }*/
-    return 0;
-}
-int* toBits(string input){
-	int *b = new int[64];
-	for(int i =2, n = -1; input[i] != '\0';i++){
-        if(input[i]>='0' && input[i]<='9'){
-            int a = input[i]-'0';
-            int k = 0;
-            while(a != 0){
-                b[n+4-k]=a%2;
-                a /= 2;
-                k++;
-            }
-            n+=4;
-            if(k<4){
-                for(int i = 1;i<(4-k);i++){
-                        b[n+i-4]=0;
-                }
-            }
-        }
-        if(input[i]>='A' && input[i]<='F'){
-            int a = input[i]-'A'+10;
-            int p = 0;
-            while(a != 0){
-                b[n+4-p]=a%2;
-                a /= 2;
-                p++;
-                
-            }
-            n+=4;
-        }
-    }
-    return b;
-}
-
-int* f_function(int R[32],int key[48]){
-	//Expansion E
-	int R1[48];
-	for(int i=0;i<48;i++){
-		int a = E[i]-1;
-		R1[i] = R[a];
-	}
-	//XOR with round key
-	int R2[48];
-	for(int i=0;i<48;i++){
-		R2[i] = R1[i]^key[i];
-	}
-	//test informations
-	/*for(int i=0;i<32;i++){
-    	cout<<" "<< R[i];
-    	if((i+1)%4==0)
-    	std::cout << " ";
-    	if((i+1)%8==0)
-    	std::cout << " " << std::endl;
-    }
-	std::cout << " " << std::endl;
-	std::cout << "R1 " << std::endl;
-	for(int i=0;i<48;i++){
-    	cout<<" "<< R1[i];
-    	if((i+1)%6==0)
-    	std::cout << " " << std::endl;
-    }
-    std::cout << " " << std::endl;
-    std::cout << "key " << std::endl;
-    for(int i=0;i<48;i++){
-    	cout<<" "<< key[i];
-    	if((i+1)%6==0)
-    	std::cout << " " << std::endl;
-    }
-    std::cout << " " << std::endl;
-    std::cout << "R2 " << std::endl;
-	for(int i=0;i<48;i++){
-    	cout<<" "<< R2[i];
-    	if((i+1)%6==0)
-    	std::cout << " " << std::endl;
-    }*/
     
-	//S-box substitution
-	int R3[32];
-	for(int j=1,k=1; j<=48; j=j+6){
-		int i = (k-1)*6;
-		int t = (k-1)*4;
-		int row = 2*R2[i]+R2[i+5];
-		int col = 8*R2[i+1]+4*R2[i+2]+2*R2[i+3]+R2[i+4];
-		int r= S_BOX[k][row][col];
-		int r1[4];
-		//cout<<"j:"<<j<<" turns:"<<k<<" rows:"<<row<<" col:"<<col<<" r:"<<r<<endl;
-		for(int a = 0;a<4 ;a++){
-			if(r !=0){
-				r1[a]=r%2;
-				r /= 2;	
-			}else{
-				r1[a]=0;	
-			}
-		}
-		for(int a = 0; a<4;a++){
-			R3[t+a]=r1[3-a];
-			//cout<<" R3["<<t+a<<"]:"<<R3[t+a];
-		}
-		//cout<<""<<endl;
-		k++;
-	}
-	//Permutation
-	int *R4 = new int[32];
-	for(int i = 0; i<32;i++){
-		R4[i]= R3[P[i]-1];
-	}
-	
-	return R4;
-}
-
-int* left_shift(int subkey[28],int s){
-	int* out = new int[28];
-	for(int i=0; i<28; i++){
-		out[i]=subkey[i+s%28];
-	}
-	return out;
-}
-
-int* key_schedule(int key[64]){
-	int C[28],D[28];
-	int key2[56],key3[48];
-	int *key4 = new int[768];
-	//P_1
-	for(int i=0;i<56;i++){
-		/*if(i<28){
-			C[i]=key[PC_1[i]-1];
-		}else{
-			D[i-28]=key[PC_1[i]-1];
-		}*/
-		key2[i]=key[PC_1[i]-1];
-	}
-	
-	
-	
-	for(int key_round = 0;key_round<16;key_round++){
-		for(int i=0;i<56;i++){
-			if(i<28){
-				C[i]=key2[i];
-			}else{
-				D[i-28]=key2[i];
-			}
-		}
-		int* C1 = left_shift(C,shift[key_round]);
-		int* D1 = left_shift(D,shift[key_round]);
-		for(int i=0;i<28;i++){
-			C[i]=C1[i];
-			D[i]=D1[i];
-			key2[i]=C1[i];
-			key2[i+28]=D1[i];
-		}
-		//PC_2
-		for(int i =0;i<48;i++){
-			key4[key_round*48+i]=key2[PC_2[i]-1];
-			//cout<<i<<" key2["<<PC_2[i]-1<<"]"<<key2[PC_2[i]-1]<<endl;
-		}
-		
-	}
-	return key4;
+	return 0;
 }
