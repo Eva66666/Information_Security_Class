@@ -25,7 +25,7 @@ def ext_euclid(x, y):
         b1, b2 = b2, b1 - q * b2
     return x, a1, b1
 
-#  CRT precompute
+#  CRT
 def crt_function(p, q, d):
     _, q_inverse, _ = ext_euclid(q, p)
     return d % (p - 1), d % (q - 1), q_inverse % p
@@ -99,16 +99,25 @@ def rsa_keys(n, rounds=40):
             private_key = (p, q, d)
             return public_key, private_key
 
+
+# encryption
+def encryption(m, public_key):
+    return sq_and_mul(m, public_key[0], public_key[1])
+
+
+# decryption with CRT
+def decryption(c, private_key):
+    m1 = sq_and_mul(c, private_key[2], private_key[0])
+    m2 = sq_and_mul(c, private_key[3], private_key[1])
+    h = (private_key[4] * (m1 - m2)) % private_key[0]
+    return m2 + h * private_key[1]
+
 def generate_key():
     n = get_input("\n Input bits of n (in number): ")
     rounds = get_input("Input the number of rounds for Miller-Rabin: ")
     public_key, private_key = rsa_keys(n, rounds)
     print("\nPublic Key (e, n):", public_key)
     print("Private Key (p, q, d ):", private_key, "\n")
-
-# encryption
-def encryption(m, public_key):
-    return sq_and_mul(m, public_key[0], public_key[1])
 
 def start_encryption():
     m = str_to_num(input("\n Input plaintext m: "))
@@ -124,13 +133,6 @@ def start_encryption():
         #print(m[i])
         list_c.append(encryption(m[i], (e, n)))
     print("\nGenerated ciphertext c:",list_c , "\n")
-
-# decryption with CRT
-def decryption(c, private_key):
-    m1 = sq_and_mul(c, private_key[2], private_key[0])
-    m2 = sq_and_mul(c, private_key[3], private_key[1])
-    h = (private_key[4] * (m1 - m2)) % private_key[0]
-    return m2 + h * private_key[1]
 
 def start_decryption():
     result = ""
