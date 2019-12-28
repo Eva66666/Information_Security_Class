@@ -88,10 +88,11 @@ def sha_hash(m):
 
 def key_generation():
     loop = True
+    bit = get_input('Please insert the bits number of the prime: ')
     print('generating keys,please wait a moment...')
     while loop:
         k=random.randrange(2**(863), 2**(864))
-        q=generate_prime(160)
+        q=generate_prime(bit)
         p=(k*q)+1
         L = p.bit_length()
         t = random.randint(1,p-1)
