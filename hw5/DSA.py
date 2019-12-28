@@ -3,14 +3,6 @@ import random
 import hashlib
 import math
 
-#change string into number
-def str_to_num(str):
-    list_num = []
-    for i in range(0,len(str)):
-        list_num.append(ord(str[i])) 
-    # num = np.fromstring(str, dtype=np.uint8)
-    return list_num
-
 # change input into int
 def get_input(message):
     choice = int(input(message))
@@ -27,7 +19,7 @@ def sq_and_mul(a, e, n):
     return result
 
 #compute inverse with extended Euclid
-def ext_euclid(a,m):
+def conpute_inverse(a,m):
     if gcd(a,m)!=1:
         return None
     u1,u2,u3 = 1,0,a
@@ -147,7 +139,7 @@ def sign():
         r = random.randint(1,q-1)
         c1 = (sq_and_mul(g,r,p))%q
         c2 = sha_hash(m) + (a*c1)
-        r_inverse = ext_euclid(r,q)
+        r_inverse = conpute_inverse(r,q)
         c2 = (c2*r_inverse)%q
         if(c1 != 0 and c2 != 0):
             loop = False
@@ -178,9 +170,9 @@ def varify():
     c1 = get_input('please insert the c1:')
     c2 = get_input('please insert the c2:')
     t1 = sha_hash(m)
-    c2_inverse = ext_euclid(c2,q)
+    c2_inverse = conpute_inverse(c2,q)
     t1 = (t1*c2_inverse)%q
-    t2 = ext_euclid(c2,q)
+    t2 = conpute_inverse(c2,q)
     t2 = (t2*c1)%q
     v1 = sq_and_mul(g,t1,p)
     v2 = sq_and_mul(h,t2,p)
