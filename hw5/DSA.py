@@ -1,4 +1,4 @@
-import math
+import sys
 import random
 import hashlib
 import math
@@ -109,12 +109,37 @@ def key_generation():
             print("h = ",h)
             print("\nprivate key:")
             print("a = ",a)
+            file1 = open("public_key.txt","w")
+            file1.truncate()
+            file1.write(str(p))
+            file1.write("\n")
+            file1.write(str(q))
+            file1.write("\n")
+            file1.write(str(g))
+            file1.write("\n")
+            file1.write(str(h))
+            file1.close()
+            file2 = open("private_key.txt","w")
+            file2.truncate()
+            file2.write(str(a))
+            file2.close()
+            print("\nkeys have been stored at public_key.txt and private_key.txt")
+            
 	
 def sign():
-    p = get_input('please insert the p:')
-    q = get_input('please insert the q:')
-    g = get_input('please insert the g:')
-    a = get_input('please insert the a:')
+    # print('Reading key...')
+    file1 = open("public_key.txt","r")
+    file2 = open("private_key.txt","r")
+    p = int(file1.readline().rstrip())
+    q = int(file1.readline().rstrip())
+    g = int(file1.readline().rstrip())
+    h = int(file1.readline().rstrip())
+    a = int(file2.readline().rstrip())
+    print('Finish reading key!\n')
+    # p = get_input('please insert the p:')
+    # q = get_input('please insert the q:')
+    # g = get_input('please insert the g:')
+    # a = get_input('please insert the a:')
     m = input('please insert the message:')
     loop = True
     while loop:
@@ -125,18 +150,30 @@ def sign():
         c2 = (c2*r_inverse)%q
         if(c1 != 0 and c2 != 0):
             loop = False
-    print('signature has finished!')
+    print('\nsignature has finished!')
     print('message:',m)
     print('c1:',c1)
     print('c2:',c2)
+    # file = open("signature.txt","w")
+    # file.write(str(c1))
+    # file.write("\n")
+    # file.write(str(c2))
+    # print("cipher has been stored at signature.txt")
 
 
 def varify():
     m = input('please insert the message:')
-    p = get_input('please insert the p:')
-    q = get_input('please insert the q:')
-    g = get_input('please insert the g:')
-    h = get_input('please insert the h:')
+    # p = get_input('please insert the p:')
+    # q = get_input('please insert the q:')
+    # g = get_input('please insert the g:')
+    # h = get_input('please insert the h:')
+    # print('\nReading key...')
+    file1 = open("public_key.txt","r")
+    p = int(file1.readline().rstrip())
+    q = int(file1.readline().rstrip())
+    g = int(file1.readline().rstrip())
+    h = int(file1.readline().rstrip())
+    print('Finish reading key!')
     c1 = get_input('please insert the c1:')
     c2 = get_input('please insert the c2:')
     t1 = sha_hash(m)
@@ -148,17 +185,13 @@ def varify():
     v2 = sq_and_mul(h,t2,p)
     v = ((v1*v2)%p)%q
     if(v == c1):
-        print("Valid signature")
+        print("\n------Result: Valid signature!------\n\n")
     else:
-        print("Invalid signature")
+        print("\n------Result: Invalid signature!------\n\n")
 
 def main():
     a = ""
     print("\n------------ DSA ------------")
-    print("1. Generate the key")
-    print("2. DSA Encryption")
-    print("3. DSA Decryption.")
-    print("4. Exit.")
     # get input
     
     while a != "4":
