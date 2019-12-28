@@ -198,8 +198,8 @@ def main():
     while a != "4":
         # get input
         print("\n1. Generate the key")
-        print("2. DSA Encryption")
-        print("3. DSA Decryption.")
+        print("2. DSA Sign")
+        print("3. DSA Verify.")
         print("4. Exit.")
         a = input("\nplease input your choice with number:")
         if a == "1":
